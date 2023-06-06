@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>영화 리뷰 작성</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+    input[type="text"],
+    textarea {
+      width: 100%;
+      padding: 5px;
+      margin-top: 5px;
+    }
+    button {
+      margin-top: 10px;
+    }
+    #reviewList {
+      margin-top: 20px;
+    }
+    .review {
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      padding: 10px;
+    }
+    .review p {
+      margin: 5px 0;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>영화 리뷰 작성</h1>
+
+  <form id="reviewForm">
+    <input type="text" id="author" placeholder="작성자 이름" required>
+    <input type="text" id="content" placeholder="리뷰 내용" required>
+    <input type="password" id="password" placeholder="비밀번호" required>
+    <button type="submit">리뷰 작성</button>
+  </form>
+
+  <div id="reviewList"></div>
+
+  <script>
+    // reveiewForm 폼 요소에 submit 이벤트 등록. 이벤트가 발생하면 콜백함수 실행.
+    document.getElementById('reviewForm').addEventListener('submit', function(event) {
+      event.preventDefault(); // 폼 제출 시 페이지 새로고침 방지
+
+      // getElementById 메서드를 사용하여 해당 입력 필드의 값을 가져옵니다
+      const author = document.getElementById('author').value;
+      const content = document.getElementById('content').value;
+      const password = document.getElementById('password').value;
+        
+      // review 객체 생성
+      const review = {
+        author: author,
+        content: content,
+        password: password
+      };
+
+      saveReview(review);
+      displayReviews();
+    });
+
+    // 리뷰를 저장하는 역할을 하는 함수 설정
+    // localStorage를 이용한 방식
+    // key 값으로 reviews를 받아오고, 가져온 데이터가 존재하는지 확인
+    // 존재하는 경우 해당 데이터를 JavaScript 객체나 배열로 변환
+    // 존재하지 않는 경우 빈 배열로 변수에 할당
+    function saveReview(review) {
+      let reviews = localStorage.getItem('reviews');
+      if (reviews) {
+        reviews = JSON.parse(reviews);
+      } else {
+        reviews = [];
+      }
+      // 새로운 리뷰를 reviews 배열에 추가
+      reviews.push(review);
+      // 리뷰 배열을 문자열 형태로 변환하여 로컬 스토리지에 저장
+      localStorage.setItem('reviews', JSON.stringify(reviews));
+    }
+
+
+    function displayReviews() {
+      const reviewList = document.getElementById('reviewList');
+      // 리뷰 목록을 갱신하고 새로운 리뷰만 표시
+      // innerHTML을 빈 문자열로 설정하여 이전 내용을 제거
+      reviewList.innerHTML = '';
+
+      let reviews = localStorage.getItem('reviews');
+      if (reviews) {
+        reviews = JSON.parse(reviews);
+        // reviews 배열에 있는 각 리뷰에 대해서 반복한다.
+        reviews.forEach(function(review) {
+          const reviewItem = document.createElement('div');
+          reviewItem.className = 'review';
+          // 배치될 리뷰 요소의 내용 HTML 문자열 생성
+          reviewItem.innerHTML = '<p><strong>작성자:</strong> ' + review.author + '</p><p><strong>내용:</strong> ' + review.content + '</p>';
+          reviewList.appendChild(reviewItem);
+        });
+      }
+    }
+
+    // 페이지 로드 시 저장된 리뷰 표시
+    displayReviews();
+  </script>
+</body>
+</html>
+
